@@ -2,20 +2,23 @@ pipeline {
     agent any
 
     stages {
-        stage("build") {
-            steps {
-                echo 'building app..'
-            }
+        stage('Install') {
+            steps { sh 'npm install' }
         }
-        stage("test") {
-            steps {
-                echo 'testing app..'
-            }
+        
+        stage('Test') {
+      parallel {
+        stage('Static code analysis') {
+            steps { sh 'npm run-script lint' }
         }
-        stage("deploy") {
-            steps {
-                echo 'deploying app..'
-            }
+        stage('Unit tests') {
+            steps { sh 'npm run-script test' }
+        }
+      }
+    }
+
+        stage('Build') {
+        steps { sh 'npm run-script build' }
         }
     }
 }
